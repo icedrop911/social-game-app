@@ -16,7 +16,7 @@ wyr:[
 ['Live by the beach','Live in a cabin in the mountains'],
 ['Have more time','Have more money'],
 ['Remember every detail','Learn any skill instantly'],
-['Have a weekly adventure','Have a completely relaxing weekend',
+['Have a weekly adventure','Have a completely relaxing weekend'],
 ['Have a pause button for life','Have a rewind button for life'],
 ['Be famous for something kind','Be quietly excellent at everything'],
 ['Only eat your favourite meal','Never eat the same meal twice'],
