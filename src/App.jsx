@@ -19,18 +19,18 @@ wyr:[
 ['Have a weekly adventure','Have a completely relaxing weekend']
 ],
 truth:[
-['What is something people often misunderstand about you?','What small thing makes you feel appreciated?'],
-['What is a fear you rarely admit?','What is something you are proud of?'],
-['What is one lesson you learned the hard way?','When do you feel most like yourself?'],
-['What is a kind thing someone did that you still remember?','What is something you wish people asked you about?'],
-['What is a habit you would like to change?','What is one thing you are trying to get better at?'],
-['What makes you feel genuinely respected?','What is something that instantly improves your day?'],
-['What is a memory that always makes you smile?','What is something new you want to try?'],
-['What is one thing you value more as you get older?','What helps you feel safe around people?'],
-['What is a compliment you still remember?','What is something you have changed your mind about?'],
-['What is one goal you have not told many people?','What do you wish you made more time for?'],
-['What is something you find difficult to say out loud?','What does a good friendship look like to you?'],
-['What is one thing you appreciate about this group?','What is a small win you have had recently?']
+['TRUTH: What is something people often misunderstand about you?','DARE: Give someone in the room a sincere, specific compliment.'],
+['TRUTH: What is a fear you rarely admit?','DARE: Tell a funny story about a harmless mistake you made.'],
+['TRUTH: What is one lesson you learned the hard way?','DARE: Let the group choose a song for your next 10 seconds of dancing.'],
+['TRUTH: What is a kind thing someone did that you still remember?','DARE: Do your best impression of someone famous.'],
+['TRUTH: What is one habit you would like to change?','DARE: Speak in a dramatic movie-trailer voice until your next turn.'],
+['TRUTH: What makes you feel genuinely respected?','DARE: Make up a two-line advert for the person on your left.'],
+['TRUTH: What is a memory that always makes you smile?','DARE: Name three things you appreciate about today in five seconds.'],
+['TRUTH: What helps you feel safe around people?','DARE: Do a 5-second victory dance.'],
+['TRUTH: What is a compliment you still remember?','DARE: Give the group your best terrible joke.'],
+['TRUTH: What is one goal you have not told many people?','DARE: Talk like a sports commentator for the next 15 seconds.'],
+['TRUTH: What is something you find difficult to say out loud?','DARE: Invent a handshake with the person beside you.'],
+['TRUTH: What is one thing you appreciate about this group?','DARE: Describe your day using only three words and act them out.']
 ],
 most:[
 ['Most likely to become famous','Most likely to survive on a deserted island'],
