@@ -1,7 +1,7 @@
 import {useEffect,useState} from 'react';
 import {hasBackend,supabase,getClientId,randomRoomCode} from './supabase';
 import {ArrowLeft,ArrowRight,Check,Copy,Heart,Play,Plus,Shield,Users,Volume2,Wifi} from 'lucide-react';
-const modes=[{id:'wyr',title:'Would You Rather',desc:'Two impossible choices. One honest answer.',tag:'EASY START',count:'Starter set',symbol:'↔'},{id:'truth',title:'Truth or Dare',desc:'A little bold. Always your choice.',tag:'CLASSIC',count:'Starter set',symbol:'✳'},{id:'most',title:'Most Likely To',desc:'Point at the person who fits best.',tag:'GROUP FAVOURITE',count:'Starter set',symbol:'◎'},{id:'never',title:'Never Have I Ever',desc:'Find out what you have in common.',tag:'STORIES',count:'100 prompts',symbol:'∞'}];
+const modes=[{id:'wyr',title:'Would You Rather',desc:'Two impossible choices. One honest answer.',tag:'EASY START',count:'12 prompt pairs',symbol:'↔'},{id:'truth',title:'Truth or Dare',desc:'A little bold. Always your choice.',tag:'CLASSIC',count:'12 prompt pairs',symbol:'✳'},{id:'most',title:'Most Likely To',desc:'Point at the person who fits best.',tag:'GROUP FAVOURITE',count:'12 prompt pairs',symbol:'◎'},{id:'never',title:'Never Have I Ever',desc:'Find out what you have in common.',tag:'STORIES',count:'12 prompt pairs',symbol:'∞'}];
 const dbGameId={wyr:'would',truth:'truth',most:'likely',never:'never'};
 const prompts={
 wyr:[
