@@ -48,7 +48,10 @@ create or replace function public.create_game_room(p_code text,p_nickname text,p
 returns jsonb language plpgsql security definer set search_path=public as $$
 declare r public.rooms;p public.players;
 begin
- if p_code !~ '^[A-Z0-9]{6}
+ if p_code !~ '^[A-Z0-9]{6}$' then raise exception 'Invalid room code'; end if;
+ if length(trim(p_nickname)) not between 1 and 20 then raise exception 'Nickname must be 1–20 characters'; end if;
+ if length(trim(p_client_id)) not between 1 and 80 then raise exception 'Invalid player identity'; end if;
+ if length(trim(p_host_token)) < 20 then raise exception 'Invalid host token'; end if;
  if p_game_id not in ('would','truth','likely','never','couples','family') then raise exception 'Invalid game'; end if;
  if p_mode not in ('friends','couples','family') then raise exception 'Invalid mode'; end if;
  insert into rooms(code,host_client_id,game_id,mode) values(upper(p_code),p_client_id,p_game_id,p_mode) returning * into r;
@@ -61,7 +64,9 @@ returns jsonb language plpgsql security definer set search_path=public as $$
 declare r public.rooms;p public.players;
 begin
  if length(trim(p_nickname)) not between 1 and 20 then raise exception 'Nickname must be 1–20 characters'; end if;
- if p_code !~ '^[A-Za-z0-9]{6}
+ if p_code !~ '^[A-Za-z0-9]{6}$' then raise exception 'Enter a valid six-character room code'; end if;
+ if length(trim(p_client_id)) not between 1 and 80 then raise exception 'Invalid player identity'; end if;
+ select * into r from rooms where code=upper(p_code) and status<>'ended';
  if not found then raise exception 'Room not found or has ended'; end if;
  if not exists(select 1 from players where room_id=r.id and client_id=p_client_id) and (select count(*) from players where room_id=r.id)>=20 then raise exception 'This room is full (20 players maximum)'; end if;
  insert into players(room_id,client_id,nickname,is_host,is_ready) values(r.id,p_client_id,trim(p_nickname),false,false)
