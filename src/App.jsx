@@ -25,7 +25,6 @@ wyr:[
 ['Travel with your best friend forever','Travel solo to a new place every month'],
 ['Always know what to say','Always know when to listen'],
 ['Have every weekend free','Finish work every day by noon']
-]
 ],
 truth:[
 ['TRUTH: What is something people often misunderstand about you?','DARE: Give someone in the room a sincere, specific compliment.'],
@@ -48,7 +47,6 @@ truth:[
 ['TRUTH: What is one thing you are proud of but rarely mention?','DARE: Give everyone a one-word nickname, keeping it kind.'],
 ['TRUTH: What makes a conversation unforgettable for you?','DARE: Make up a dance move and teach it to the group.'],
 ['TRUTH: What is one opinion you have changed your mind about?','DARE: Tell a 15-second story that includes the words pineapple, traffic, and superstar.']
-]
 ],
 most:[
 ['Most likely to become famous','Most likely to survive on a deserted island'],
@@ -71,7 +69,6 @@ most:[
 ['Most likely to laugh at their own joke','Most likely to keep the group connected'],
 ['Most likely to make a bold career change','Most likely to give the best pep talk'],
 ['Most likely to turn leftovers into a feast','Most likely to befriend every pet']
-]
 ],
 never:[
 ['Never have I ever pretended to understand a film','Never have I ever laughed at the wrong moment'],
@@ -94,7 +91,6 @@ never:[
 ['Never have I ever given someone a nickname that stuck','Never have I ever started laughing while trying to be serious'],
 ['Never have I ever forgotten why I opened my phone','Never have I ever packed too much for a short trip'],
 ['Never have I ever made a promise to start something on Monday','Never have I ever learned something useful from a random conversation']
-]
 ]}
 export default function App(){const [screen,setScreen]=useState(()=>new URLSearchParams(window.location.search).has('room')?'join':'home'),[mode,setMode]=useState('wyr'),[name,setName]=useState(''),[room,setRoom]=useState(()=>new URLSearchParams(window.location.search).get('room')?.toUpperCase().slice(0,6)||''),[players,setPlayers]=useState([]),[promptIndex,setPromptIndex]=useState(0),[category,setCategory]=useState('friends'),[copied,setCopied]=useState(false),[round,setRound]=useState(1),[votes,setVotes]=useState({}),[allVotes,setAllVotes]=useState([]),[report,setReport]=useState(false),[notice,setNotice]=useState(''),[roomId,setRoomId]=useState(''),[hostToken,setHostToken]=useState(''),[paused,setPaused]=useState(false),[gameStatus,setGameStatus]=useState('lobby'),[isHost,setIsHost]=useState(false);const clientId=getClientId();const promptList=prompts[mode]||prompts.wyr;const prompt=promptList[promptIndex%promptList.length];const code=room||'------';async function enter(){if(!name.trim()){setNotice('Add your name to continue.');return}if(!hasBackend){setNotice('Live rooms are not configured yet. Add the Supabase environment variables to enable multiplayer.');return}setNotice('');const newCode=randomRoomCode();const token=crypto.randomUUID();const {data,error}=await supabase.rpc('create_game_room',{p_code:newCode,p_nickname:name.trim().slice(0,20),p_client_id:clientId,p_host_token:token,p_game_id:dbGameId[mode]||'would',p_mode:category});if(error){setNotice(error.message||'Could not create room. Please try again.');return}setRoom(newCode);setRoomId(data.room_id);setHostToken(token);sessionStorage.setItem('gc-host-'+newCode,token);setGameStatus('lobby');setScreen('lobby');await refreshRoom(data.room_id,newCode)}async function refreshRoom(id=roomId,codeOverride=room){if(!supabase||!id||!codeOverride)return;const {data,error}=await supabase.rpc('get_room_snapshot',{p_code:codeOverride,p_client_id:clientId});if(error||!data){setNotice('Unable to refresh this room. Check your connection.');return}const r=data.room;const p=data.players||[];const v=data.votes||[];setAllVotes(v);if(r){setRoom(r.code);setRoomId(r.id);setMode(({would:'wyr',truth:'truth',likely:'most',never:'never'})[r.game_id]||'wyr');setCategory(r.mode);setPromptIndex(r.prompt_index);setRound(r.prompt_index+1);setPaused(r.paused);setGameStatus(r.status);if(r.status==='playing')setScreen('game');else if(r.status==='ended')setScreen('results')}setPlayers(p.map(x=>({name:x.nickname,ready:x.is_ready,host:x.is_host,client_id:x.client_id,score:x.score})));setIsHost(p.some(x=>x.client_id===clientId&&x.is_host));setVotes(Object.fromEntries(v.filter(x=>x.round_index===(r?.prompt_index||0)).map(x=>[x.client_id,x.choice])))}async function action(act,payload={}){if(!hasBackend||!room){setNotice('Live multiplayer is not configured.');return false}const {error}=await supabase.rpc('game_room_action',{p_code:room,p_client_id:clientId,p_host_token:hostToken||sessionStorage.getItem('gc-host-'+room)||'',p_action:act,p_payload:payload});if(error){setNotice(error.message||'Action failed.');return false}await refreshRoom();return true}async function joinRoom(){if(!name.trim()||room.trim().length!==6){setNotice('Enter your name and a valid six-character room code.');return}if(!hasBackend){setNotice('Live rooms are not configured yet. The host must enable the Supabase backend first.');return}setNotice('');const {data,error}=await supabase.rpc('join_game_room',{p_code:room.toUpperCase(),p_nickname:name.trim().slice(0,20),p_client_id:clientId});if(error){setNotice(error.message||'Could not join that room.');return}setRoom(data.code);setRoomId(data.room_id);setHostToken(sessionStorage.getItem('gc-host-'+data.code)||'');setScreen('lobby');await refreshRoom(data.room_id,data.code)}async function start(){if(await action('start')){setScreen('game');setPromptIndex(0);setRound(1)}}async function next(){if(promptIndex>=promptList.length-1){if(await action('end')){setReport(false);setScreen('results')}return}if(await action('skip')){setReport(false);setVotes({})}}function copy(){const inviteUrl=new URL(window.location.href);inviteUrl.searchParams.set('room',code);inviteUrl.hash='';const invite=inviteUrl.toString();if(!navigator.clipboard?.writeText){setNotice('Room code: '+code);return}navigator.clipboard.writeText(invite).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),1800)}).catch(()=>setNotice('Room code: '+code))}
 useEffect(()=>{if(!hasBackend||!roomId)return;refreshRoom(roomId,room);const poll=setInterval(()=>refreshRoom(roomId,room),2500);return()=>clearInterval(poll)},[roomId]);
