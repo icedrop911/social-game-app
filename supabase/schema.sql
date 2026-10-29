@@ -33,17 +33,16 @@ alter table public.room_secrets enable row level security;
 alter table public.votes enable row level security;
 alter table public.prompt_reports enable row level security;
 drop policy if exists "room state readable" on public.rooms;
-create policy "room state readable" on public.rooms for select to anon,authenticated using(true);
 drop policy if exists "player state readable" on public.players;
-create policy "player state readable" on public.players for select to anon,authenticated using(true);
 drop policy if exists "votes readable" on public.votes;
-create policy "votes readable" on public.votes for select to anon,authenticated using(true);
-revoke insert,update,delete on public.rooms from anon,authenticated;
-revoke insert,update,delete on public.players from anon,authenticated;
+drop policy if exists "members can read room" on public.rooms;
+drop policy if exists "members can read players" on public.players;
+drop policy if exists "members can read votes" on public.votes;
+revoke all on public.rooms from anon,authenticated;
+revoke all on public.players from anon,authenticated;
 revoke all on public.room_secrets from anon,authenticated;
-revoke insert,update,delete on public.votes from anon,authenticated;
-revoke insert,update,delete on public.prompt_reports from anon,authenticated;
-grant select on public.rooms,public.players,public.votes to anon,authenticated;
+revoke all on public.votes from anon,authenticated;
+revoke all on public.prompt_reports from anon,authenticated;
 create or replace function public.create_game_room(p_code text,p_nickname text,p_client_id text,p_host_token text,p_game_id text,p_mode text)
 returns jsonb language plpgsql security definer set search_path=public as $$
 declare r public.rooms;p public.players;
@@ -102,12 +101,33 @@ begin
  end case;
  return jsonb_build_object('ok',true);
 end $$;
+create or replace function public.get_room_snapshot(p_code text,p_client_id text)
+returns jsonb language plpgsql security definer set search_path=public as $
+declare r public.rooms;
+begin
+ select * into r from public.rooms where code=upper(trim(p_code)) and status<>'ended';
+ if not found then
+   select * into r from public.rooms where code=upper(trim(p_code));
+   if not found then raise exception 'Room not found'; end if;
+ end if;
+ if length(trim(coalesce(p_client_id,''))) not between 1 and 80 then raise exception 'Invalid player identity'; end if;
+ if not exists(select 1 from public.players where room_id=r.id and client_id=p_client_id) then
+   raise exception 'Join this room first';
+ end if;
+ return jsonb_build_object(
+  'room',jsonb_build_object('id',r.id,'code',r.code,'game_id',r.game_id,'mode',r.mode,'status',r.status,'prompt_index',r.prompt_index,'paused',r.paused),
+  'players',(select coalesce(jsonb_agg(jsonb_build_object('nickname',p.nickname,'client_id',p.client_id,'is_host',p.is_host,'is_ready',p.is_ready,'score',p.score) order by p.created_at),'[]'::jsonb) from public.players p where p.room_id=r.id),
+  'votes',(select coalesce(jsonb_agg(jsonb_build_object('round_index',v.round_index,'client_id',v.client_id,'choice',v.choice)),'[]'::jsonb) from public.votes v where v.room_id=r.id and v.round_index=r.prompt_index)
+ );
+end $;
 revoke all on function public.create_game_room(text,text,text,text,text,text) from public;
 revoke all on function public.join_game_room(text,text,text) from public;
 revoke all on function public.game_room_action(text,text,text,text,jsonb) from public;
 grant execute on function public.create_game_room(text,text,text,text,text,text) to anon,authenticated;
 grant execute on function public.join_game_room(text,text,text) to anon,authenticated;
 grant execute on function public.game_room_action(text,text,text,text,jsonb) to anon,authenticated;
+revoke all on function public.get_room_snapshot(text,text) from public;
+grant execute on function public.get_room_snapshot(text,text) to anon,authenticated;
 do $$ begin alter publication supabase_realtime add table public.rooms; exception when duplicate_object then null; when undefined_object then null; end $$;
 do $$ begin alter publication supabase_realtime add table public.players; exception when duplicate_object then null; when undefined_object then null; end $$;
 do $$ begin alter publication supabase_realtime add table public.votes; exception when duplicate_object then null; when undefined_object then null; end $$;
