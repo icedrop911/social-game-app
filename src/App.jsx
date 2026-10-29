@@ -3,7 +3,63 @@ import {hasBackend,supabase,getClientId,randomRoomCode} from './supabase';
 import {ArrowLeft,ArrowRight,Check,Copy,Heart,Play,Plus,Shield,Users,Volume2,Wifi} from 'lucide-react';
 const modes=[{id:'wyr',title:'Would You Rather',desc:'Two impossible choices. One honest answer.',tag:'EASY START',count:'Starter set',symbol:'↔'},{id:'truth',title:'Truth or Dare',desc:'A little bold. Always your choice.',tag:'CLASSIC',count:'Starter set',symbol:'✳'},{id:'most',title:'Most Likely To',desc:'Point at the person who fits best.',tag:'GROUP FAVOURITE',count:'Starter set',symbol:'◎'},{id:'never',title:'Never Have I Ever',desc:'Find out what you have in common.',tag:'STORIES',count:'100 prompts',symbol:'∞'}];
 const dbGameId={wyr:'would',truth:'truth',most:'likely',never:'never'};
-const prompts={wyr:[['Always be 30 minutes early','Always be 30 minutes late'],['Have a personal chef','Have a personal driver'],['Only communicate in voice notes','Only communicate in memes'],['Relive your best day','Skip your worst day']],truth:[['What is something people misunderstand about you?','What small thing makes you feel appreciated?'],['What is a fear you rarely admit?','What is one thing you are proud of?']],most:[['Most likely to become famous?','Most likely to survive on a deserted island?'],['Most likely to forget why they entered a room?','Most likely to plan a spontaneous trip?']],never:[['Never have I ever pretended to understand a film.','Never have I ever laughed at the wrong moment.'],['Never have I ever sent a message to the wrong person.','Never have I ever stayed up all night talking.']]};
+const prompts={
+wyr:[
+['Always be 30 minutes early','Always be 30 minutes late'],
+['Have a personal chef','Have a personal driver'],
+['Only communicate in voice notes','Only communicate in memes'],
+['Relive your best day','Skip your worst day'],
+['Know every language','Be able to play every instrument'],
+['Have unlimited free travel','Have a beautiful home anywhere'],
+['Give up music for a year','Give up movies for a year'],
+['Always tell the truth','Never be able to speak again'],
+['Live by the beach','Live in a cabin in the mountains'],
+['Have more time','Have more money'],
+['Remember every detail','Learn any skill instantly'],
+['Have a weekly adventure','Have a completely relaxing weekend']
+],
+truth:[
+['What is something people often misunderstand about you?','What small thing makes you feel appreciated?'],
+['What is a fear you rarely admit?','What is something you are proud of?'],
+['What is one lesson you learned the hard way?','When do you feel most like yourself?'],
+['What is a kind thing someone did that you still remember?','What is something you wish people asked you about?'],
+['What is a habit you would like to change?','What is one thing you are trying to get better at?'],
+['What makes you feel genuinely respected?','What is something that instantly improves your day?'],
+['What is a memory that always makes you smile?','What is something new you want to try?'],
+['What is one thing you value more as you get older?','What helps you feel safe around people?'],
+['What is a compliment you still remember?','What is something you have changed your mind about?'],
+['What is one goal you have not told many people?','What do you wish you made more time for?'],
+['What is something you find difficult to say out loud?','What does a good friendship look like to you?'],
+['What is one thing you appreciate about this group?','What is a small win you have had recently?']
+],
+most:[
+['Most likely to become famous','Most likely to survive on a deserted island'],
+['Most likely to forget why they entered a room','Most likely to plan a spontaneous trip'],
+['Most likely to make everyone laugh','Most likely to give the best advice'],
+['Most likely to arrive with snacks','Most likely to organise the whole group'],
+['Most likely to start dancing first','Most likely to remember every birthday'],
+['Most likely to try a new hobby','Most likely to get everyone home safely'],
+['Most likely to become an entrepreneur','Most likely to win a quiz night'],
+['Most likely to keep a secret','Most likely to turn a small outing into an adventure'],
+['Most likely to make friends with a stranger','Most likely to stay calm in a crisis'],
+['Most likely to send the longest voice note','Most likely to take the best photos'],
+['Most likely to plan a dream holiday','Most likely to laugh at the wrong moment'],
+['Most likely to check on everyone','Most likely to bring the best playlist']
+],
+never:[
+['Never have I ever pretended to understand a film','Never have I ever laughed at the wrong moment'],
+['Never have I ever sent a message to the wrong person','Never have I ever stayed up all night talking'],
+['Never have I ever forgotten someone’s name immediately','Never have I ever made up an excuse to leave early'],
+['Never have I ever sung loudly when alone','Never have I ever danced when nobody was watching'],
+['Never have I ever bought something I did not need','Never have I ever got lost while using a map'],
+['Never have I ever rewatched a favourite show','Never have I ever cried during a film'],
+['Never have I ever forgotten an important date','Never have I ever laughed until I cried'],
+['Never have I ever practised a conversation in my head','Never have I ever waved back at someone who was waving at another person'],
+['Never have I ever tried to look busy when I was not','Never have I ever fallen asleep during a movie'],
+['Never have I ever cooked without following a recipe','Never have I ever started a hobby and quickly abandoned it'],
+['Never have I ever taken a photo of my food','Never have I ever made a playlist for a specific mood'],
+['Never have I ever stayed somewhere longer because the conversation was good','Never have I ever made a new friend unexpectedly']
+]}
 export default function App(){const [screen,setScreen]=useState(()=>new URLSearchParams(window.location.search).has('room')?'join':'home'),[mode,setMode]=useState('wyr'),[name,setName]=useState(''),[room,setRoom]=useState(()=>new URLSearchParams(window.location.search).get('room')?.toUpperCase().slice(0,6)||''),[players,setPlayers]=useState([]),[promptIndex,setPromptIndex]=useState(0),[category,setCategory]=useState('friends'),[copied,setCopied]=useState(false),[round,setRound]=useState(1),[votes,setVotes]=useState({}),[report,setReport]=useState(false),[notice,setNotice]=useState(''),[roomId,setRoomId]=useState(''),[hostToken,setHostToken]=useState(''),[paused,setPaused]=useState(false),[gameStatus,setGameStatus]=useState('lobby'),[isHost,setIsHost]=useState(false);const clientId=getClientId();const promptList=prompts[mode]||prompts.wyr;const prompt=promptList[promptIndex%promptList.length];const code=room||'------';async function enter(){if(!name.trim()){setNotice('Add your name to continue.');return}if(!hasBackend){setNotice('Live rooms are not configured yet. Add the Supabase environment variables to enable multiplayer.');return}setNotice('');const newCode=randomRoomCode();const token=crypto.randomUUID();const {data,error}=await supabase.rpc('create_game_room',{p_code:newCode,p_nickname:name.trim().slice(0,20),p_client_id:clientId,p_host_token:token,p_game_id:dbGameId[mode]||'would',p_mode:category});if(error){setNotice(error.message||'Could not create room. Please try again.');return}setRoom(newCode);setRoomId(data.room_id);setHostToken(token);sessionStorage.setItem('gc-host-'+newCode,token);setGameStatus('lobby');setScreen('lobby');await refreshRoom(data.room_id)}async function refreshRoom(id=roomId){if(!supabase||!id)return;const [{data:r,error:re},{data:p,error:pe},{data:v}]=await Promise.all([supabase.from('rooms').select('*').eq('id',id).maybeSingle(),supabase.from('players').select('*').eq('room_id',id).order('created_at'),supabase.from('votes').select('*').eq('room_id',id)]);if(re||pe){setNotice('Unable to refresh this room. Check your connection.');return}if(r){setRoom(r.code);setMode(({would:'wyr',truth:'truth',likely:'most',never:'never'})[r.game_id]||'wyr');setCategory(r.mode);setPromptIndex(r.prompt_index);setRound(r.prompt_index+1);setPaused(r.paused);setGameStatus(r.status);if(r.status==='playing')setScreen('game');else if(r.status==='ended')setScreen('lobby')}if(p){setPlayers(p.map(x=>({name:x.nickname,ready:x.is_ready,host:x.is_host,client_id:x.client_id,score:x.score})));setIsHost(p.some(x=>x.client_id===clientId&&x.is_host))}if(v)setVotes(Object.fromEntries(v.filter(x=>x.round_index===(r?.prompt_index||0)).map(x=>[x.client_id,x.choice])))}async function action(act,payload={}){if(!hasBackend||!room){setNotice('Live multiplayer is not configured.');return false}const {error}=await supabase.rpc('game_room_action',{p_code:room,p_client_id:clientId,p_host_token:hostToken||sessionStorage.getItem('gc-host-'+room)||'',p_action:act,p_payload:payload});if(error){setNotice(error.message||'Action failed.');return false}await refreshRoom();return true}async function joinRoom(){if(!name.trim()||room.trim().length!==6){setNotice('Enter your name and a valid six-character room code.');return}if(!hasBackend){setNotice('Live rooms are not configured yet. The host must enable the Supabase backend first.');return}setNotice('');const {data,error}=await supabase.rpc('join_game_room',{p_code:room.toUpperCase(),p_nickname:name.trim().slice(0,20),p_client_id:clientId});if(error){setNotice(error.message||'Could not join that room.');return}setRoom(data.code);setRoomId(data.room_id);setHostToken(sessionStorage.getItem('gc-host-'+data.code)||'');setScreen('lobby');await refreshRoom(data.room_id)}async function start(){if(await action('start')){setScreen('game');setPromptIndex(0);setRound(1)}}async function next(){if(await action('skip')){setReport(false);setVotes({})}}function copy(){const inviteUrl=new URL(window.location.href);inviteUrl.searchParams.set('room',code);inviteUrl.hash='';const invite=inviteUrl.toString();if(!navigator.clipboard?.writeText){setNotice('Room code: '+code);return}navigator.clipboard.writeText(invite).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),1800)}).catch(()=>setNotice('Room code: '+code))}
 useEffect(()=>{if(!hasBackend||!roomId)return;refreshRoom(roomId);const channel=supabase.channel('room-'+roomId).on('postgres_changes',{event:'*',schema:'public',table:'rooms',filter:'id=eq.'+roomId},()=>refreshRoom(roomId)).on('postgres_changes',{event:'*',schema:'public',table:'players',filter:'room_id=eq.'+roomId},()=>refreshRoom(roomId)).on('postgres_changes',{event:'*',schema:'public',table:'votes',filter:'room_id=eq.'+roomId},()=>refreshRoom(roomId)).subscribe();return()=>{supabase.removeChannel(channel)}},[roomId]);
 return <main className="app"><header className="top"><button className="wordmark" onClick={()=>setScreen('home')}><span className="mark">g.</span><span>good company</span></button><span className="top-note"><span className="live-dot"/> MADE FOR BEING TOGETHER</span><button className="icon-btn" aria-label="Safety information" onClick={()=>setNotice('Your comfort comes first. You can skip any prompt or report one at any time.')}><Shield size={18}/></button></header>
