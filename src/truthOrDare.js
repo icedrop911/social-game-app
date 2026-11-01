@@ -9,10 +9,17 @@ const truthPrompts = [
 ["Flirty","What is the boldest move you have made on someone you liked?"],
 ["Deep","What is something you are still learning to accept about yourself?"],
 ["Deep","What does feeling loved look like to you?"],
+["Wild confession","What is the most chaotic thing you have done because you had a crush?"],
+["Wild confession","What is the pettiest reason you have ever stopped talking to someone?"],
+["Wild confession","Have you ever secretly checked an ex or crush's social media more than you want to admit?"],
+["Naughty","What is the boldest or most scandalous message you have ever sent?"],
+["Naughty","Have you ever had a crush on two people at the same time? What happened?"],
+["Naughty","What is something daring you have wanted to try on a date but have not admitted?"],
 ["18+ intimate", "What is your biggest turn-on that has nothing to do with appearance?", true],
 ["18+ intimate", "What kind of kiss do you find hardest to forget?", true],
 ["18+ intimate", "What is one intimate boundary you consider important?", true],
-["18+ intimate", "What helps you feel safe and desired in a consensual relationship?", true]
+["18+ intimate", "What helps you feel safe and desired in a consensual relationship?", true],
+["18+ intimate", "What is the most adventurous intimate experience you would consider with a trusted, consenting partner?", true]
 ];
 const darePrompts = [
 ["Funny","Give a dramatic 20-second weather report about this room."],
@@ -25,9 +32,16 @@ const darePrompts = [
 ["Naughty","Show your best flirtatious eyebrow raise."],
 ["Naughty","Deliver your smoothest pickup line with a straight face."],
 ["Naughty","Act out how you behave when you have a crush."],
+["Crazy","Do a dramatic 30-second confession of love to an ordinary object in the room."],
+["Crazy","Let the group give you a ridiculous nickname and answer to it until your next turn."],
+["Crazy","Recreate your most dramatic reaction to seeing your crush walk into a room."],
+["Naughty","Deliver your most outrageous but respectful pickup line to a willing player."],
+["Naughty","Let the group choose a harmless pose for you to hold for 20 seconds."],
+["Crazy","Freestyle a short song about the person to your left."],
 ["18+ intimate","Give a willing partner a brief hand massage, only with clear consent.",true],
 ["18+ intimate","Describe your ideal romantic atmosphere without naming anyone.",true],
-["18+ intimate","Share one non-explicit thing that makes intimacy feel special.",true]
+["18+ intimate","Share one non-explicit thing that makes intimacy feel special.",true],
+["18+ intimate","With a willing partner, share a slow dance for 20 seconds; either person can decline.",true]
 ];
 function shuffle(items, seed) {
   const a=[...items]; let n=0;
