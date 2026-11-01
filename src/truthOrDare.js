@@ -14,7 +14,6 @@ const truthPrompts = [
 ["Wild confession","Have you ever secretly checked an ex or crush's social media more than you want to admit?"],
 ["Naughty","What is the boldest or most scandalous message you have ever sent?"],
 ["Naughty","Have you ever had a crush on two people at the same time? What happened?"],
-["Naughty","What is something daring you have wanted to try on a date but have not admitted?"],
 ["18+ intimate", "What is your biggest turn-on that has nothing to do with appearance?", true],
 ["18+ intimate", "What kind of kiss do you find hardest to forget?", true],
 ["18+ intimate", "What is one intimate boundary you consider important?", true],
