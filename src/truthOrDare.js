@@ -35,7 +35,7 @@ function shuffle(items, seed) {
   for(let i=a.length-1;i>0;i--){n=(n*1664525+1013904223)>>>0;const j=n%(i+1);[a[i],a[j]]=[a[j],a[i]];}
   return a;
 }
-export function getTruthDareCount(adult=false) { return Math.max(0,truthPrompts.filter(x=>adult||!x[2]).length); }
+export function getTruthDareCount(choice='truth',adult=false) { const source=choice==='dare'?darePrompts:truthPrompts; return source.filter(x=>adult||!x[2]).length; }
 export function getTruthDarePrompt(choice,index,room,adult=false) {
   const source=(choice==="truth"?truthPrompts:darePrompts).filter(x=>adult||!x[2]);
   const ordered=shuffle(source,(room||"GOODCO")+":"+choice);
