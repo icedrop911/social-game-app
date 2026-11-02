@@ -119,7 +119,7 @@ begin
  return jsonb_build_object(
   'room',jsonb_build_object('id',r.id,'code',r.code,'game_id',r.game_id,'mode',r.mode,'status',r.status,'prompt_index',r.prompt_index,'paused',r.paused),
   'players',(select coalesce(jsonb_agg(jsonb_build_object('nickname',p.nickname,'client_id',p.client_id,'is_host',p.is_host,'is_ready',p.is_ready,'score',p.score) order by p.created_at),'[]'::jsonb) from public.players p where p.room_id=r.id),
-  'votes',(select coalesce(jsonb_agg(jsonb_build_object('round_index',v.round_index,'client_id',v.client_id,'choice',v.choice)),'[]'::jsonb) from public.votes v where v.room_id=r.id and v.round_index=r.prompt_index)
+  'votes',(select coalesce(jsonb_agg(jsonb_build_object('round_index',v.round_index,'client_id',v.client_id,'choice',v.choice)),'[]'::jsonb) from public.votes v where v.room_id=r.id)
  );
 end $$;
 revoke all on function public.create_game_room(text,text,text,text,text,text) from public;
