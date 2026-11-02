@@ -91,7 +91,9 @@ begin
  when 'pause' then if r.status<>'playing' then raise exception 'Game is not running'; end if; update rooms set paused=not paused,updated_at=now() where id=r.id;
  when 'skip' then if r.status<>'playing' then raise exception 'Game is not running'; end if; update rooms set prompt_index=prompt_index+1,updated_at=now() where id=r.id;
  when 'end' then update rooms set status='ended',paused=false,updated_at=now() where id=r.id;
- when 'vote' then if r.status<>'playing' or r.paused then raise exception 'Voting is not open'; end if;
+ when 'vote' then
+  if r.status<>'playing' then raise exception 'The game has not started or has already ended'; end if;
+  if r.paused then raise exception 'The game is paused. The host must resume it before voting'; end if;
   choice:=coalesce(p_payload->>'vote',''); if length(choice)=0 or length(choice)>80 then raise exception 'Choose a valid answer'; end if;
   insert into votes(room_id,round_index,client_id,choice) values(r.id,r.prompt_index,p_client_id,choice)
   on conflict(room_id,round_index,client_id) do update set choice=excluded.choice;
