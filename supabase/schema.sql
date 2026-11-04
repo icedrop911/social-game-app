@@ -9,6 +9,7 @@ create table if not exists public.rooms (
  status text not null default 'lobby' check (status in ('lobby','playing','ended')),
  prompt_index integer not null default 0,
  paused boolean not null default false,
+ adult_prompts boolean not null default false,
  created_at timestamptz not null default now(),
  updated_at timestamptz not null default now()
 );
@@ -89,6 +90,7 @@ begin
  when 'ready' then update players set is_ready=not is_ready where id=p.id;
  when 'start' then if r.status='ended' then raise exception 'This room has ended'; end if; update rooms set status='playing',paused=false,prompt_index=0,updated_at=now() where id=r.id;
  when 'pause' then if r.status<>'playing' then raise exception 'Game is not running'; end if; update rooms set paused=not paused,updated_at=now() where id=r.id;
+ when 'set_adult_prompts' then update rooms set adult_prompts=coalesce((p_payload->>'enabled')::boolean,false),updated_at=now() where id=r.id;
  when 'skip' then if r.status<>'playing' then raise exception 'Game is not running'; end if; update rooms set prompt_index=prompt_index+1,updated_at=now() where id=r.id;
  when 'end' then update rooms set status='ended',paused=false,updated_at=now() where id=r.id;
  when 'vote' then
@@ -117,7 +119,7 @@ begin
    raise exception 'Join this room first';
  end if;
  return jsonb_build_object(
-  'room',jsonb_build_object('id',r.id,'code',r.code,'game_id',r.game_id,'mode',r.mode,'status',r.status,'prompt_index',r.prompt_index,'paused',r.paused),
+  'room',jsonb_build_object('id',r.id,'code',r.code,'game_id',r.game_id,'mode',r.mode,'status',r.status,'prompt_index',r.prompt_index,'paused',r.paused,'adult_prompts',r.adult_prompts),
   'players',(select coalesce(jsonb_agg(jsonb_build_object('nickname',p.nickname,'client_id',p.client_id,'is_host',p.is_host,'is_ready',p.is_ready,'score',p.score) order by p.created_at),'[]'::jsonb) from public.players p where p.room_id=r.id),
   'votes',(select coalesce(jsonb_agg(jsonb_build_object('round_index',v.round_index,'client_id',v.client_id,'choice',v.choice)),'[]'::jsonb) from public.votes v where v.room_id=r.id)
  );
