@@ -83,7 +83,7 @@ begin
  if length(trim(p_client_id)) not between 1 and 80 then raise exception 'Invalid player identity'; end if;
  select * into p from players where room_id=r.id and client_id=p_client_id;
  if not found then raise exception 'Join this room first'; end if;
- if p_action in ('start','pause','skip','end') then
+ if p_action in ('start','pause','skip','end','set_adult_prompts') then
   select host_token into saved_host_token from room_secrets where room_id=r.id;
   if r.host_client_id<>p_client_id or saved_host_token is distinct from p_host_token then raise exception 'Only the host can do that'; end if;
  end if;
