@@ -5,7 +5,7 @@
 ## What's in this repository
 - Responsive React + Vite interface
 - Would You Rather, Truth or Dare, Most Likely To, and Never Have I Ever prompt flows
-- Supabase-backed room creation/join RPC integration, player lobby, host controls, votes, prompt reports, and realtime subscriptions (requires backend configuration and testing)
+- Supabase-backed room creation/join RPC integration, player lobby, host controls, votes, prompt reports, and periodic room-state refreshes (requires backend configuration and testing)
 - Skip/report affordances and family/friends/couples mode selection
 - Supabase client configuration placeholder and database schema starter
 
