@@ -98,6 +98,10 @@ begin
   if r.status<>'playing' then raise exception 'The game has not started or has already ended'; end if;
   if r.paused then raise exception 'The game is paused. The host must resume it before voting'; end if;
   choice:=coalesce(p_payload->>'vote',''); if length(choice)=0 or length(choice)>80 then raise exception 'Choose a valid answer'; end if;
+  if r.game_id='truth' and p_client_id<>r.host_client_id then raise exception 'Only the host can choose Truth or Dare'; end if;
+  if r.game_id='likely' then
+   if not exists(select 1 from players where room_id=r.id and client_id=choice) then raise exception 'Choose a player in this room'; end if;
+  elsif choice not in ('a','b') then raise exception 'Choose a valid answer'; end if;
   insert into votes(room_id,round_index,client_id,choice) values(r.id,r.prompt_index,p_client_id,choice)
   on conflict(room_id,round_index,client_id) do update set choice=excluded.choice;
  when 'report' then insert into prompt_reports(room_id,game_id,prompt_text,reason,reporter_client_id)
