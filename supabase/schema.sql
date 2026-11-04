@@ -13,6 +13,7 @@ create table if not exists public.rooms (
  created_at timestamptz not null default now(),
  updated_at timestamptz not null default now()
 );
+alter table public.rooms add column if not exists adult_prompts boolean not null default false;
 create table if not exists public.room_secrets(room_id uuid primary key references public.rooms(id) on delete cascade,host_token text not null);
 create table if not exists public.players(
  id uuid primary key default gen_random_uuid(),room_id uuid not null references public.rooms(id) on delete cascade,
