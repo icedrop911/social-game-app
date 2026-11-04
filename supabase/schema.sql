@@ -78,10 +78,15 @@ begin
  select * into r from rooms where code=upper(p_code) and status<>'ended' for update;
  if not found then raise exception 'Room not found or has ended'; end if;
  if not exists(select 1 from players where room_id=r.id and client_id=p_client_id) and (select count(*) from players where room_id=r.id)>=20 then raise exception 'This room is full (20 players maximum)'; end if;
+ if exists(select 1 from room_player_secrets where room_id=r.id and client_id=p_client_id) then
+  if not exists(select 1 from room_player_secrets where room_id=r.id and client_id=p_client_id and player_token=p_player_token) then
+   raise exception 'This player session is already registered on another browser. Rejoin from the original browser or use a new player identity.';
+  end if;
+ else
+  insert into room_player_secrets(room_id,client_id,player_token) values(r.id,p_client_id,p_player_token);
+ end if;
  insert into players(room_id,client_id,nickname,is_host,is_ready) values(r.id,p_client_id,trim(p_nickname),false,false)
  on conflict(room_id,client_id) do update set nickname=excluded.nickname returning * into p;
- insert into room_player_secrets(room_id,client_id,player_token) values(r.id,p_client_id,p_player_token)
- on conflict(room_id,client_id) do update set player_token=excluded.player_token;
  return jsonb_build_object('room_id',r.id,'code',r.code,'player_id',p.id);
 end $$;
 drop function if exists public.game_room_action(text,text,text,text,jsonb);
