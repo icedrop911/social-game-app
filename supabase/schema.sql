@@ -116,7 +116,10 @@ begin
   if r.status<>'playing' then raise exception 'The game has not started or has already ended'; end if;
   if r.paused then raise exception 'The game is paused. The host must resume it before voting'; end if;
   choice:=coalesce(p_payload->>'vote',''); if length(choice)=0 or length(choice)>80 then raise exception 'Choose a valid answer'; end if;
-  if r.game_id='truth' and p_client_id<>r.host_client_id then raise exception 'Only the host can choose Truth or Dare'; end if;
+  if r.game_id='truth' then
+   select host_token into saved_host_token from room_secrets where room_id=r.id;
+   if r.host_client_id<>p_client_id or saved_host_token is distinct from p_host_token then raise exception 'Only the host can choose Truth or Dare'; end if;
+  end if;
   if r.game_id='likely' then
    if not exists(select 1 from players where room_id=r.id and client_id=choice) then raise exception 'Choose a player in this room'; end if;
   elsif choice not in ('a','b') then raise exception 'Choose a valid answer'; end if;
