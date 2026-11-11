@@ -193,3 +193,19 @@ h1 em,h2 em,.gc-community-head h2 em{font-family:'Outfit',sans-serif;font-style:
 .gc-cinema-title{letter-spacing:-.09em}
 .gc-cinema-line{font-weight:500}
 @media(prefers-reduced-motion:reduce){.gc-theme-toggle{transition:none}}
+
+/* Consistent member photos across community surfaces */
+.gc-avatar,.gc-avatar-button,.gc-avatar-preview{display:inline-flex;align-items:center;justify-content:center;flex:none;overflow:hidden;border-radius:50%;object-fit:cover}
+.gc-avatar img,.gc-avatar-button img,.gc-avatar-preview img{display:block;width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.gc-avatar{width:42px;height:42px}
+.gc-avatar-button{width:50px;height:50px}
+.gc-post-author{display:flex;align-items:center;gap:11px;margin-bottom:12px}
+.gc-post-author>div{display:flex;flex-direction:column;gap:3px;min-width:0}
+.gc-post-author strong{font-size:13px}
+.gc-post-author small{font-size:10px;color:var(--gc-muted,#8b8197)}
+.gc-chat-head{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--gc-line)}
+.gc-message-row{display:flex;align-items:flex-end;gap:8px;margin:8px 0}
+.gc-message-row.mine{justify-content:flex-end}
+.gc-message-row .gc-avatar{width:30px;height:30px;font-size:11px}
+.gc-message-row .gc-bubble{max-width:min(78%,520px)}
+:root[data-gc-theme="dark"] .gc-post-author small{color:#b8aec9}
