@@ -107,7 +107,7 @@ create table if not exists public.community_reports (
   reason text not null check (char_length(reason) between 3 and 500),
   status text not null default 'open' check (status in ('open','reviewing','resolved','dismissed')),
   created_at timestamptz not null default now(),
-  check(num_nonnulls(reported_user_id,post_id,message_id) >= 1)
+  check(num_nonnulls(reported_user_id,post_id,message_id) = 1)
 );
 
 create index if not exists community_posts_created_idx on public.community_posts(created_at desc);
@@ -177,11 +177,16 @@ create policy "Users can view their friend requests" on public.community_friend_
 for select to authenticated using (sender_id = auth.uid() or recipient_id = auth.uid());
 drop policy if exists "Users can send friend requests" on public.community_friend_requests;
 create policy "Users can send friend requests" on public.community_friend_requests
-for insert to authenticated with check (sender_id = auth.uid());
+for insert to authenticated with check (
+  sender_id = auth.uid()
+  and not exists(select 1 from public.community_blocks b where
+    (b.blocker_id=sender_id and b.blocked_id=recipient_id) or
+    (b.blocker_id=recipient_id and b.blocked_id=sender_id))
+);
 drop policy if exists "Recipients can respond to friend requests" on public.community_friend_requests;
 create policy "Recipients can respond to friend requests" on public.community_friend_requests
-for update to authenticated using (recipient_id = auth.uid() or sender_id = auth.uid())
-with check (recipient_id = auth.uid() or sender_id = auth.uid());
+for update to authenticated using (recipient_id = auth.uid())
+with check (recipient_id = auth.uid());
 
 drop policy if exists "Users manage their own blocks" on public.community_blocks;
 create policy "Users manage their own blocks" on public.community_blocks
@@ -224,7 +229,8 @@ for insert to authenticated with check (
 );
 drop policy if exists "Authors can edit their own messages" on public.community_messages;
 create policy "Authors can edit their own messages" on public.community_messages
-for update to authenticated using (sender_id=auth.uid()) with check (sender_id=auth.uid());
+for update to authenticated using (sender_id=auth.uid() and public.community_is_conversation_member(conversation_id))
+with check (sender_id=auth.uid() and public.community_is_conversation_member(conversation_id));
 
 drop policy if exists "Authenticated users can read forum posts" on public.community_posts;
 create policy "Authenticated users can read forum posts" on public.community_posts
