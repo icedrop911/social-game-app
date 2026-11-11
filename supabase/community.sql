@@ -168,6 +168,9 @@ for select to authenticated using (owner_id = auth.uid() or recipient_id = auth.
 drop policy if exists "Owners can revoke contact shares" on public.community_contact_shares;
 create policy "Owners can revoke contact shares" on public.community_contact_shares
 for delete to authenticated using (owner_id = auth.uid());
+drop policy if exists "Owners can update shared contact values" on public.community_contact_shares;
+create policy "Owners can update shared contact values" on public.community_contact_shares
+for update to authenticated using (owner_id = auth.uid()) with check (owner_id = auth.uid());
 
 drop policy if exists "Users can view their friend requests" on public.community_friend_requests;
 create policy "Users can view their friend requests" on public.community_friend_requests
@@ -296,7 +299,7 @@ revoke all on public.community_profiles, public.community_contacts, public.commu
   public.community_replies, public.community_reports from anon;
 grant select,insert,update on public.community_profiles to authenticated;
 grant select,insert,update,delete on public.community_contacts to authenticated;
-grant select,insert,delete on public.community_contact_shares to authenticated;
+grant select,insert,update,delete on public.community_contact_shares to authenticated;
 grant select,insert,update on public.community_friend_requests to authenticated;
 grant select,insert,delete on public.community_blocks to authenticated;
 grant select on public.community_conversations,public.community_conversation_members to authenticated;
