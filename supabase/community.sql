@@ -122,6 +122,9 @@ returns trigger language plpgsql security definer set search_path=public,auth as
 declare candidate text;
 begin
   candidate := coalesce(nullif(regexp_replace(coalesce(new.raw_user_meta_data->>'username',''), '[^A-Za-z0-9_]', '', 'g'), ''), 'member_' || left(new.id::text,8));
+  if exists(select 1 from public.community_profiles p where lower(p.username)=lower(candidate)) then
+    candidate := left(candidate,15) || '_' || left(new.id::text,8);
+  end if;
   insert into public.community_profiles(id,username,display_name)
   values(new.id,candidate,coalesce(left(new.raw_user_meta_data->>'display_name',50),''))
   on conflict(id) do nothing;
@@ -261,6 +264,7 @@ for delete to authenticated using (author_id=auth.uid());
 drop policy if exists "Users can submit and view their reports" on public.community_reports;
 create policy "Users can submit and view their reports" on public.community_reports
 for select to authenticated using (reporter_id=auth.uid());
+drop policy if exists "Users can submit reports" on public.community_reports;
 create policy "Users can submit reports" on public.community_reports
 for insert to authenticated with check (reporter_id=auth.uid());
 
@@ -312,6 +316,18 @@ grant select on public.community_conversations,public.community_conversation_mem
 grant select,insert,update on public.community_messages to authenticated;
 grant select,insert,update,delete on public.community_posts,public.community_replies to authenticated;
 grant select,insert on public.community_reports to authenticated;
+
+-- Enable realtime delivery for private messages when the standard publication exists.
+do $
+begin
+  if exists(select 1 from pg_publication where pubname='supabase_realtime')
+     and not exists(
+       select 1 from pg_publication_tables
+       where pubname='supabase_realtime' and schemaname='public' and tablename='community_messages'
+     ) then
+    alter publication supabase_realtime add table public.community_messages;
+  end if;
+end $;
 
 -- Presence and typing are ephemeral Supabase Realtime Presence/Broadcast events;
 -- do not persist them as a permanent online-status record.
