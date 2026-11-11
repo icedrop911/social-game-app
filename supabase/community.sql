@@ -184,15 +184,23 @@ drop policy if exists "Users manage their own blocks" on public.community_blocks
 create policy "Users manage their own blocks" on public.community_blocks
 for all to authenticated using (blocker_id = auth.uid()) with check (blocker_id = auth.uid());
 
+create or replace function public.community_is_conversation_member(target_conversation uuid)
+returns boolean language sql stable security definer set search_path=public,auth as $
+  select exists(select 1 from public.community_conversation_members m
+    where m.conversation_id=target_conversation and m.user_id=auth.uid());
+$;
+revoke all on function public.community_is_conversation_member(uuid) from public;
+grant execute on function public.community_is_conversation_member(uuid) to authenticated;
+
 drop policy if exists "Conversation members can view conversations" on public.community_conversations;
 create policy "Conversation members can view conversations" on public.community_conversations
 for select to authenticated using (
-  exists(select 1 from public.community_conversation_members m where m.conversation_id=id and m.user_id=auth.uid())
+  public.community_is_conversation_member(id)
 );
 drop policy if exists "Members can view conversation membership" on public.community_conversation_members;
 create policy "Members can view conversation membership" on public.community_conversation_members
 for select to authenticated using (
-  exists(select 1 from public.community_conversation_members m where m.conversation_id=conversation_id and m.user_id=auth.uid())
+  public.community_is_conversation_member(conversation_id)
 );
 drop policy if exists "Conversation members can read messages" on public.community_messages;
 create policy "Conversation members can read messages" on public.community_messages
@@ -206,7 +214,8 @@ for insert to authenticated with check (
   and exists(select 1 from public.community_conversation_members m where m.conversation_id=conversation_id and m.user_id=auth.uid())
   and not exists(
     select 1 from public.community_conversation_members other
-    join public.community_blocks b on b.blocker_id=other.user_id and b.blocked_id=auth.uid()
+    join public.community_blocks b on
+      ((b.blocker_id=other.user_id and b.blocked_id=auth.uid()) or (b.blocker_id=auth.uid() and b.blocked_id=other.user_id))
     where other.conversation_id=conversation_id and other.user_id<>auth.uid()
   )
 );
