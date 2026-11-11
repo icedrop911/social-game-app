@@ -193,10 +193,10 @@ create policy "Users manage their own blocks" on public.community_blocks
 for all to authenticated using (blocker_id = auth.uid()) with check (blocker_id = auth.uid());
 
 create or replace function public.community_is_conversation_member(target_conversation uuid)
-returns boolean language sql stable security definer set search_path=public,auth as $
+returns boolean language sql stable security definer set search_path=public,auth as $$
   select exists(select 1 from public.community_conversation_members m
     where m.conversation_id=target_conversation and m.user_id=auth.uid());
-$;
+$$;
 revoke all on function public.community_is_conversation_member(uuid) from public;
 grant execute on function public.community_is_conversation_member(uuid) to authenticated;
 
@@ -213,18 +213,18 @@ for select to authenticated using (
 drop policy if exists "Conversation members can read messages" on public.community_messages;
 create policy "Conversation members can read messages" on public.community_messages
 for select to authenticated using (
-  exists(select 1 from public.community_conversation_members m where m.conversation_id=conversation_id and m.user_id=auth.uid())
+  exists(select 1 from public.community_conversation_members m where m.conversation_id=community_messages.conversation_id and m.user_id=auth.uid())
 );
 drop policy if exists "Conversation members can send messages" on public.community_messages;
 create policy "Conversation members can send messages" on public.community_messages
 for insert to authenticated with check (
   sender_id=auth.uid()
-  and exists(select 1 from public.community_conversation_members m where m.conversation_id=conversation_id and m.user_id=auth.uid())
+  and exists(select 1 from public.community_conversation_members m where m.conversation_id=community_messages.conversation_id and m.user_id=auth.uid())
   and not exists(
     select 1 from public.community_conversation_members other
     join public.community_blocks b on
       ((b.blocker_id=other.user_id and b.blocked_id=auth.uid()) or (b.blocker_id=auth.uid() and b.blocked_id=other.user_id))
-    where other.conversation_id=conversation_id and other.user_id<>auth.uid()
+    where other.conversation_id=community_messages.conversation_id and other.user_id<>auth.uid()
   )
 );
 drop policy if exists "Authors can edit their own messages" on public.community_messages;
