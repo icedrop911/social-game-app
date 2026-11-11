@@ -320,7 +320,7 @@ grant select,insert,update,delete on public.community_posts,public.community_rep
 grant select,insert on public.community_reports to authenticated;
 
 -- Enable realtime delivery for private messages when the standard publication exists.
-do $
+do $$
 begin
   if exists(select 1 from pg_publication where pubname='supabase_realtime')
      and not exists(
@@ -329,7 +329,7 @@ begin
      ) then
     alter publication supabase_realtime add table public.community_messages;
   end if;
-end $;
+end $$;
 
 -- Presence and typing are ephemeral Supabase Realtime Presence/Broadcast events;
 -- do not persist them as a permanent online-status record.
