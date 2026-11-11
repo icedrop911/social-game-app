@@ -209,3 +209,12 @@ h1 em,h2 em,.gc-community-head h2 em{font-family:'Outfit',sans-serif;font-style:
 .gc-message-row .gc-avatar{width:30px;height:30px;font-size:11px}
 .gc-message-row .gc-bubble{max-width:min(78%,520px)}
 :root[data-gc-theme="dark"] .gc-post-author small{color:#b8aec9}
+
+/* Game-room profile photos */
+.player-avatar{display:inline-flex;align-items:center;justify-content:center;flex:none;overflow:hidden;border-radius:50%;width:38px;height:38px;background:linear-gradient(145deg,#ffe18a,#ffad89);color:#482b50;font-size:12px;font-weight:700}
+.player-avatar img{display:block;width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.gc-player-vote-person,.gc-result-player{display:inline-flex;align-items:center;gap:10px;min-width:0}
+.gc-player-vote-person>.player-avatar,.gc-result-player>.player-avatar{width:36px;height:36px}
+.gc-voter-chip{display:inline-flex!important;align-items:center;gap:6px;padding:5px 8px!important}
+.gc-voter-chip .player-avatar{width:24px;height:24px;font-size:9px}
+.gc-result-row{align-items:center;gap:12px}
