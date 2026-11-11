@@ -131,6 +131,8 @@ begin
   return new;
 end $$;
 
+revoke all on function public.community_create_profile() from public, anon, authenticated;
+
 drop trigger if exists community_auth_user_created on auth.users;
 create trigger community_auth_user_created after insert on auth.users
 for each row execute function public.community_create_profile();
