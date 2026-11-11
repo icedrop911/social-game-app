@@ -218,3 +218,7 @@ h1 em,h2 em,.gc-community-head h2 em{font-family:'Outfit',sans-serif;font-style:
 .gc-voter-chip{display:inline-flex!important;align-items:center;gap:6px;padding:5px 8px!important}
 .gc-voter-chip .player-avatar{width:24px;height:24px;font-size:9px}
 .gc-result-row{align-items:center;gap:12px}
+
+.gc-player-vote-person .player-avatar{display:inline-flex;border:0;padding:0;border-radius:50%}
+.gc-player-vote-person strong{font-size:13px;font-weight:600}
+.gc-voter-chip .player-avatar{padding:0;border:0;border-radius:50%;background:linear-gradient(145deg,#ffe18a,#ffad89)}
