@@ -8,8 +8,8 @@ as $function$
 begin
   update public.rooms
      set updated_at = now()
-   where id = coalesce(new.room_id, old.room_id);
-  return coalesce(new, old);
+   where id = new.room_id;
+  return new;
 end;
 $function$;
 
