@@ -253,3 +253,7 @@ h1 em,h2 em,.gc-community-head h2 em{font-family:'Outfit',sans-serif;font-style:
 
 /* Every player avatar is an accessible, clickable image preview. */
 .gc-player-avatar-button{padding:0;border:0;cursor:zoom-in;transition:transform .18s ease,box-shadow .18s ease}.gc-player-avatar-button:hover{transform:scale(1.08);box-shadow:0 0 0 3px #7951dc55}.gc-player-avatar-button:focus-visible,.gc-home-avatar-clickable:focus-visible{outline:3px solid #7951dc;outline-offset:4px}.gc-home-avatar-clickable{cursor:zoom-in;transition:transform .18s ease,box-shadow .18s ease}.gc-home-avatar-clickable:hover{transform:scale(1.06);box-shadow:0 0 0 3px #7951dc55}
+
+/* Interactive game invitations in Community messages */
+.gc-game-invite{display:grid;gap:7px;min-width:220px;padding:12px;border:1px solid #b9a4e8;border-radius:13px;background:linear-gradient(135deg,#f7f2ff,#fff);color:#35264c}.gc-game-invite>strong{font-size:13px}.gc-game-invite>span{font-size:14px;font-weight:650}.gc-game-invite>small{font-size:11px;color:#76688a}.gc-game-invite-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}.gc-game-invite-actions button{font-size:12px;padding:8px 12px}.gc-game-invite-actions .primary{border:0;border-radius:9px;background:#7654c5;color:#fff;cursor:pointer}.gc-game-invite-actions .gc-small-btn{border:1px solid #e0d8eb;border-radius:9px;cursor:pointer}
+:root[data-gc-theme='dark'] .gc-game-invite{background:linear-gradient(135deg,#342849,#282035);border-color:#765da4;color:#f5efff}:root[data-gc-theme='dark'] .gc-game-invite>small{color:#c2b5d5}
