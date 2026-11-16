@@ -248,3 +248,5 @@ h1 em,h2 em,.gc-community-head h2 em{font-family:'Outfit',sans-serif;font-style:
 @media(max-width:600px){.gc-message-fab{right:16px;bottom:16px;width:54px;height:54px}.gc-message-popover{right:12px;bottom:80px}}
 
 :root{--gc-card:#fff;--gc-muted:#847c91}:root[data-gc-theme="dark"]{--gc-card:#211a2c;--gc-muted:#b8aec9}
+
+.gc-avatar-preview-button{padding:0;border:0;cursor:zoom-in;transition:transform .18s ease,box-shadow .18s ease}.gc-avatar-preview-button:hover{transform:scale(1.04);box-shadow:0 0 0 4px #7951dc30}.gc-avatar-preview-button:focus-visible{outline:3px solid #7951dc;outline-offset:4px}.gc-avatar-lightbox-fallback{width:min(78vw,360px);height:min(78vw,360px);max-height:72vh;border-radius:50%;display:grid;place-items:center;background:#d9edb4;color:#394529;font-size:clamp(64px,16vw,150px);font-weight:700}
