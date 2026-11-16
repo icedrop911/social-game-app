@@ -194,11 +194,11 @@ create policy "Recipients can respond to friend requests" on public.community_fr
 for update to authenticated
 using (
   recipient_id = auth.uid()
-  or (sender_id = auth.uid() and status = 'pending')
+  or (sender_id = auth.uid() and status in ('pending','cancelled'))
 )
 with check (
   (recipient_id = auth.uid() and status in ('pending','accepted','declined'))
-  or (sender_id = auth.uid() and status = 'cancelled')
+  or (sender_id = auth.uid() and status in ('pending','cancelled'))
 );
 
 -- Publish friend-request state changes so both members receive live updates.
