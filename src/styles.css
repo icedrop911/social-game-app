@@ -224,15 +224,15 @@ h1 em,h2 em,.gc-community-head h2 em{font-family:'Outfit',sans-serif;font-style:
 .gc-voter-chip .player-avatar{padding:0;border:0;border-radius:50%;background:linear-gradient(145deg,#ffe18a,#ffad89)}
 
 /* Player profile visible from the main landing page */
-.gc-home-profile{display:inline-flex;align-items:center;gap:11px;padding:10px 14px;margin:0 0 24px;border:1px solid var(--gc-line);border-radius:16px;background:var(--gc-card);color:var(--gc-ink);cursor:pointer;text-align:left;box-shadow:0 8px 24px #3020440b}
+.gc-home-profile{display:inline-flex;align-items:center;gap:11px;padding:10px 14px;margin:0 0 24px;border:1px solid var(--gc-line);border-radius:16px;background:var(--gc-card,#fff);color:var(--gc-ink);cursor:pointer;text-align:left;box-shadow:0 8px 24px #3020440b}
 .gc-home-avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;overflow:hidden;background:linear-gradient(145deg,#8062eb,#ed9cc8);color:#fff;flex:none}
 .gc-home-avatar img{width:100%;height:100%;object-fit:cover}
 .gc-home-profile>span:nth-child(2){display:flex;flex-direction:column;gap:3px;min-width:130px}
-.gc-home-profile strong{font-size:13px}.gc-home-profile small{font-size:11px;color:var(--gc-muted)}
+.gc-home-profile strong{font-size:13px}.gc-home-profile small{font-size:11px;color:var(--gc-muted,#847c91)}
 /* Floating message shortcut and quick conversation picker */
 .gc-message-fab{position:fixed;right:24px;bottom:24px;z-index:80;width:58px;height:58px;border:0;border-radius:50%;background:linear-gradient(135deg,#7654c5,#9a78e5);color:#fff;box-shadow:0 12px 32px #3d28664a;display:grid;place-items:center;cursor:pointer}
 .gc-message-fab span{position:absolute;right:-2px;top:-3px;min-width:20px;height:20px;padding:0 5px;border-radius:20px;background:#e65f79;color:#fff;font-size:11px;display:grid;place-items:center}
-.gc-message-popover{position:fixed;right:24px;bottom:94px;z-index:81;width:min(360px,calc(100vw - 32px));max-height:min(520px,70vh);overflow:auto;padding:14px;border:1px solid var(--gc-line);border-radius:20px;background:var(--gc-card);box-shadow:0 22px 65px #21133335}
+.gc-message-popover{position:fixed;right:24px;bottom:94px;z-index:81;width:min(360px,calc(100vw - 32px));max-height:min(520px,70vh);overflow:auto;padding:14px;border:1px solid var(--gc-line);border-radius:20px;background:var(--gc-card,#fff);box-shadow:0 22px 65px #21133335}
 .gc-message-popover-head{display:flex;justify-content:space-between;align-items:center;padding:4px 2px 12px}
 .gc-message-popover-head button,.gc-friend-notifications button{border:0;background:transparent;font-size:22px;cursor:pointer;color:inherit}
 .gc-message-popover-item{width:100%;display:flex;align-items:center;gap:10px;padding:10px 4px;border:0;border-top:1px solid var(--gc-line);background:transparent;text-align:left;color:inherit;cursor:pointer}
@@ -242,7 +242,9 @@ h1 em,h2 em,.gc-community-head h2 em{font-family:'Outfit',sans-serif;font-style:
 .gc-pending-label{background:#fff4d8;color:#805b12}
 .gc-request-accept,.gc-request-decline{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;border:1px solid transparent;cursor:pointer;font-size:22px;font-weight:700;flex:none}
 .gc-request-accept{background:#e8f8ee;color:#16834b;border-color:#bde8cd}.gc-request-decline{background:#fff0f0;color:#c43d4a;border-color:#f1c5c8}
-.gc-person-info{display:flex;flex-direction:column;gap:3px;min-width:0}.gc-person-info small{color:var(--gc-muted)}
+.gc-person-info{display:flex;flex-direction:column;gap:3px;min-width:0}.gc-person-info small{color:var(--gc-muted,#847c91)}
 :root[data-gc-theme="dark"] .gc-home-profile,:root[data-gc-theme="dark"] .gc-message-popover{background:#211a2c;border-color:#49385e;color:#f5efff}
 :root[data-gc-theme="dark"] .gc-friend-notifications>div{background:#173b2a;color:#b8f0ce}
 @media(max-width:600px){.gc-message-fab{right:16px;bottom:16px;width:54px;height:54px}.gc-message-popover{right:12px;bottom:80px}}
+
+:root{--gc-card:#fff;--gc-muted:#847c91}:root[data-gc-theme="dark"]{--gc-card:#211a2c;--gc-muted:#b8aec9}
