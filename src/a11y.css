@@ -1,0 +1,81 @@
+/* Accessibility and responsive interaction hardening for Good Company. */
+:where(button, a, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid #7654c5;
+  outline-offset: 3px;
+}
+:where(button, input, select, textarea) {
+  font: inherit;
+}
+.app button,
+.gc-community button {
+  touch-action: manipulation;
+}
+.app button:not(.gc-cinema-skip),
+.gc-community button {
+  min-height: 44px;
+}
+.app input,
+.app select,
+.app textarea,
+.gc-community input,
+.gc-community select,
+.gc-community textarea {
+  scroll-margin-block: 1rem;
+}
+.gc-moderation-report {
+  display: grid;
+  gap: .7rem;
+}
+.gc-moderation-report label {
+  display: block;
+  font-weight: 600;
+}
+.gc-moderation-report select,
+.gc-moderation-report textarea {
+  width: 100%;
+  min-height: 44px;
+}
+.gc-moderation-report textarea {
+  min-height: 88px;
+  resize: vertical;
+}
+.gc-moderation-report .primary {
+  justify-self: start;
+}
+@media (max-width: 640px) {
+  .gc-community {
+    width: 100%;
+    padding-inline: 1rem;
+  }
+  .gc-tabs {
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+  .gc-tabs button {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+  .gc-person {
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .gc-inbox {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .gc-inbox > aside {
+    max-height: 34vh;
+    overflow: auto;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
