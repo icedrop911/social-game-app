@@ -43,7 +43,7 @@ end;
 $$;
 revoke all on function private.consume_write_rate(text,text,integer,integer) from public, anon, authenticated;
 
-create or replace function public.enforce_good_company_write_limits()
+create or replace function private.enforce_good_company_write_limits()
 returns trigger
 language plpgsql
 security definer
@@ -142,7 +142,7 @@ with check (
   and status in ('open','reviewing','resolved','dismissed')
 );
 
-create or replace function public.audit_good_company_report_review()
+create or replace function private.audit_good_company_report_review()
 returns trigger
 language plpgsql
 security definer
